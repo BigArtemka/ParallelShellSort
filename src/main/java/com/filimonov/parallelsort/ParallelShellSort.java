@@ -3,6 +3,7 @@ package com.filimonov.parallelsort;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,15 +12,23 @@ import java.util.concurrent.Executors;
  */
 public class ParallelShellSort {
 
+    private static ConcurrentHashMap<String, Long> threads;
+    private static volatile int iterCounter;
+
     public static void sort(int[] array, int threadsCount) throws InterruptedException {
         if (threadsCount < 2) {
             sort(array);
             return;
         }
+        iterCounter = 0;
+        threads = new ConcurrentHashMap<>();
+
         int h = 1;
         while (h * 3 < array.length)
             h = h * 3 + 1;
+
         sort(array, threadsCount, h);
+        if (threads.size() != threadsCount) throw new InterruptedException();
     }
 
     private static void sort(int[] array, int threadsCount, int h) throws InterruptedException {
@@ -46,12 +55,17 @@ public class ParallelShellSort {
     }
 
     private static void insertSort(int[] array, int h, int i, int threadCount) {
-        int temp;
         int length = array.length;
         for (int k = i; k < h; k += threadCount)
             for (i = k; i < length; i += h) {
                 sortIter(array, h, i);
             }
+        inc();
+        threads.put(Thread.currentThread().getName(), Thread.currentThread().getId());
+    }
+
+    private static synchronized void inc() {
+        iterCounter++;
     }
 
     private static void insertSort(int[] array) {
@@ -74,7 +88,7 @@ public class ParallelShellSort {
         private final int[] array;
         private final int finalH, finalI, threadsCount;
 
-        public Task(int[] array, int finalH, int finalI, int threadsCount) {
+        private Task(int[] array, int finalH, int finalI, int threadsCount) {
             this.array = array;
             this.finalH = finalH;
             this.finalI = finalI;
@@ -87,6 +101,7 @@ public class ParallelShellSort {
             return Thread.currentThread().getName();
         }
     }
+
 
     private static void sort(int[] array) {
         int h = 1;
