@@ -42,7 +42,7 @@ public class ParallelShellSort {
 
         h /= 3;
 
-        while (h > 2) {
+        while (h >= 2) {
             for (int i = 0; i < threadsCount && i < h; i++) {
                 todo.set(i, new Task(array, h, i, threadsCount));
             }
