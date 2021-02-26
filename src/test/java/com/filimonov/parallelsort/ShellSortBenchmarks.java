@@ -10,8 +10,6 @@ import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Warmup;
 
-import static com.filimonov.parallelsort.ParallelShellSort.sort;
-
 /**
  * @author Artem Filimonov
  */
@@ -25,6 +23,7 @@ public class ShellSortBenchmarks {
 
     private final static int ARRAY_SIZE = 1_000_000;
     private final static int[] arr = new int[ARRAY_SIZE];
+    private final static ParallelShellSort parallelShellSort = new ParallelShellSort();
 
     public static void main(String[] args) throws Exception {
         Random r = new Random();
@@ -36,31 +35,31 @@ public class ShellSortBenchmarks {
 
     @Benchmark
     public void oneThreads() throws InterruptedException {
-        sort(arr.clone(), 1);
+        parallelShellSort.sort(arr.clone(), 1);
     }
 
     @Benchmark
     public void twoThreads() throws InterruptedException {
-        sort(arr.clone(), 2);
+        parallelShellSort.sort(arr.clone(), 2);
     }
 
     @Benchmark
     public void threeThreads() throws InterruptedException {
-        sort(arr.clone(), 3);
+        parallelShellSort.sort(arr.clone(), 3);
     }
 
     @Benchmark
     public void fourThreads() throws InterruptedException {
-        sort(arr.clone(), 4);
+        parallelShellSort.sort(arr.clone(), 4);
     }
 
     @Benchmark
     public void eightThreads() throws InterruptedException {
-        sort(arr.clone(), 8);
+        parallelShellSort.sort(arr.clone(), 8);
     }
 
     @Benchmark
     public void sixteenThreads() throws InterruptedException {
-        sort(arr.clone(), 16);
+        parallelShellSort.sort(arr.clone(), 16);
     }
 }
